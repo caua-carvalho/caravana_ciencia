@@ -1,31 +1,66 @@
 <?php
-// Endpoint para validar a turbidez recebida via POST
-function validarTurbidez(string $jsonInput): array {
+require 'conn_pg.php'; // conexão PDO
+
+function processarRequisicao(): void {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        responderJson(['status' => 'erro', 'mensagem' => 'Método não suportado']);
+        return;
+    }
+
+    $jsonInput = file_get_contents('php://input');
+    $dados = validarEntrada($jsonInput);
+
+    if ($dados['status'] === 'erro') {
+        responderJson($dados);
+        return;
+    }
+
+    $atualizacao = atualizarTurbidezPraia($dados['id_praia'], $dados['turbidez']);
+    responderJson($atualizacao);
+}
+
+function validarEntrada(string $jsonInput): array {
     $dados = json_decode($jsonInput, true);
 
     if (json_last_error() !== JSON_ERROR_NONE) {
         return ['status' => 'erro', 'mensagem' => 'JSON inválido'];
     }
 
+    if (!isset($dados['id_praia']) || !is_int($dados['id_praia'])) {
+        return ['status' => 'erro', 'mensagem' => 'Chave "id_praia" ausente ou valor inválido'];
+    }
+
     if (!isset($dados['turbidez']) || !is_int($dados['turbidez'])) {
         return ['status' => 'erro', 'mensagem' => 'Chave "turbidez" ausente ou valor inválido'];
     }
 
-    return ['status' => 'ok', 'mensagem' => 'Valor recebido com sucesso', 'turbidez' => $dados['turbidez']];
+    return [
+        'status' => 'ok',
+        'id_praia' => $dados['id_praia'],
+        'turbidez' => $dados['turbidez']
+    ];
 }
 
-// Verifica se a requisição é POST
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $jsonInput = file_get_contents('php://input'); // Lê o corpo da requisição
-    $resultado = validarTurbidez($jsonInput);
+function atualizarTurbidezPraia(int $idPraia, int $turbidez): array {
+    global $pdo;
+    if (!$pdo) {
+        return ['status' => 'erro', 'mensagem' => 'Falha na conexão com o banco'];
+    }
 
-    header('Content-Type: application/json');
-    echo json_encode($resultado);
-} else {
-    // Retorna erro se não for uma requisição POST
-    header('Content-Type: application/json');
-    echo json_encode(['status' => 'erro', 'mensagem' => 'Método não suportado']);
+    $sql = "UPDATE praias SET taxa_turbidez = :turbidez WHERE id = :id";
+    $stmt = $pdo->prepare($sql);
+    $executou = $stmt->execute([':turbidez' => $turbidez, ':id' => $idPraia]);
+
+    if (!$executou) {
+        return ['status' => 'erro', 'mensagem' => 'Falha ao atualizar turbidez'];
+    }
+
+    return ['status' => 'ok', 'mensagem' => 'Turbidez atualizada com sucesso', 'id_praia' => $idPraia, 'turbidez' => $turbidez];
 }
 
-// Gerado pelo Copilot
-?>
+function responderJson(array $dados): void {
+    header('Content-Type: application/json');
+    echo json_encode($dados);
+}
+
+processarRequisicao();
