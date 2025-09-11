@@ -1,16 +1,17 @@
 <?php
-// conn.php - Conexão com MySQL usando mysqli
-
-$host = "dpg-d31ijdvdiees73bau1sg-a";
+$host = "dpg-d31ijdvdiees73bau1sg-a.abc.render.com"; // host completo
+$db   = "caravana";
 $user = "caravana_user";
-$password = "0mFJMBGyawH3DjYsPDiG7VLlYsrklOaO";
-$database = "caravana";
+$pass = "0mFJMBGyawH3DjYsPDiG7VLlYsrklO";
+$port = "5432";
 
-$conn = new mysqli($host, $user, $password, $database);
+$dsn = "pgsql:host=$host;port=$port;dbname=$db";
 
-if ($conn->connect_error) {
-    die("Erro na conexão: " . $conn->connect_error);
+try {
+    $pdo = new PDO($dsn, $user, $pass, [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+    ]);
+    echo "Conexão PostgreSQL bem-sucedida!";
+} catch (PDOException $e) {
+    echo "Erro na conexão: " . $e->getMessage();
 }
-
-echo "Conexão MySQL bem-sucedida!";
-$conn->close();
