@@ -1,5 +1,5 @@
 <?php
-require 'conn_pg.php'; // conexão PDO
+require 'conn.php'; // conexão PDO
 
 function processarRequisicao(): void {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
