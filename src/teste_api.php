@@ -11,7 +11,7 @@ function validarTurbidez(string $jsonInput): array {
         return ['status' => 'erro', 'mensagem' => 'Chave "turbidez" ausente ou valor inválido'];
     }
 
-    return ['status' => 'ok', 'mensagem' => 'Valor recebido com sucesso'];
+    return ['status' => 'ok', 'mensagem' => 'Valor recebido com sucesso', 'turbidez' => $dados['turbidez']];
 }
 
 // Verifica se a requisição é POST
