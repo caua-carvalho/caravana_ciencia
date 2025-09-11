@@ -1,5 +1,4 @@
 version: '3.8'
-
 services:
   app:
     build: .
@@ -25,10 +24,3 @@ services:
       MYSQL_DATABASE: minha_base
     ports:
       - "3306:3306"
-    # ⚠️ Render não mantém volumes persistentes
-    # então, em produção, isso aqui vai perder os dados quando reiniciar
-    # volumes:
-    #   - db_data:/var/lib/mysql
-
-# volumes:
-#   db_data:
