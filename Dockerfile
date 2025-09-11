@@ -1,12 +1,15 @@
+# Usa a imagem oficial PHP com Apache
 FROM php:8.2-apache
 
-# instala extensões PHP necessárias
-RUN docker-php-ext-install mysqli pdo pdo_mysql
+# Instala dependências para PostgreSQL
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    && docker-php-ext-install pdo_pgsql pgsql \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# instala ping, dig, netstat etc (só pra debug)
-RUN apt-get update && apt-get install -y iputils-ping net-tools dnsutils && rm -rf /var/lib/apt/lists/*
+# Copia o código da aplicação
+COPY ./src /var/www/html/
 
-# copia os arquivos do projeto para dentro do container
-COPY ./src /var/www/html
-
+# Expondo a porta 80
 EXPOSE 80
