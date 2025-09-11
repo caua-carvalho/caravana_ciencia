@@ -1,0 +1,12 @@
+# Imagem oficial do PHP com Apache
+FROM php:8.2-apache
+
+# Copia os arquivos do projeto para a pasta padrão do Apache
+COPY . /var/www/html/
+
+# Habilita o módulo de reescrita do Apache (se precisar)
+RUN docker-php-ext-install mysqli pdo pdo_mysql
+RUN a2enmod rewrite
+
+# Expondo a porta padrão do Apache
+EXPOSE 80
