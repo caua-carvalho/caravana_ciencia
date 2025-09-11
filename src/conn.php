@@ -2,7 +2,7 @@
 $host = "dpg-d31ijdvdiees73bau1sg-a.ohio-postgres.render.com"; // host completo
 $db   = "caravana";
 $user = "caravana_user";
-$pass = "0mFJMBGyawH3DjYsPDiG7VLlYsrklO";
+$pass = "0mFJMBGyawH3DjYsPDiG7VLlYsrklOaO";
 $port = "5432";
 
 $dsn = "pgsql:host=$host;port=$port;dbname=$db";
