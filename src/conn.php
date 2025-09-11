@@ -1,6 +1,6 @@
 <?php
 // Configuração do banco de dados
-define('DB_HOST', 'mysql.railway.internal');
+define('DB_HOST', 'mysql://root:aUHjWxtaJwslkOVdYPVrqrgnXFCNHsQF@crossover.proxy.rlwy.net:32319/railway');
 define('DB_USER', 'root');
 define('DB_PASS', 'aUHjWxtaJwslkOVdYPVrqrgnXFCNHsQF');
 define('DB_NAME', 'railway');
