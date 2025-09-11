@@ -1,5 +1,5 @@
 <?php
-require 'conn_pg.php'; // Conexão PDO com PostgreSQL
+require 'conn.php'; // Conexão PDO com PostgreSQL
 
 // Função principal para buscar e exibir as praias
 function exibirPraias() {
