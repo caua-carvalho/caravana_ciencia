@@ -1,5 +1,5 @@
 <?php
-$host = "dpg-d31ijdvdiees73bau1sg-a.abc.render.com"; // host completo
+$host = "dpg-d31ijdvdiees73bau1sg-a.ohio-postgres.render.com"; // host completo
 $db   = "caravana";
 $user = "caravana_user";
 $pass = "0mFJMBGyawH3DjYsPDiG7VLlYsrklO";
