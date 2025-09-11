@@ -6,6 +6,7 @@
     <title>Document</title>
 </head>
 <body>
+    <?php echo 'teste php' ?>
     <h1>teste</h1>
 </body>
 </html>
