@@ -1,7 +1,6 @@
 <?php
-require 'conn.php';
+require 'conn_pg.php'; // Conexão PDO com PostgreSQL
 
-// Gerado pelo Copilot
 // Função principal para buscar e exibir as praias
 function exibirPraias() {
     $praias = buscarPraias();
@@ -15,31 +14,34 @@ function exibirPraias() {
 }
 
 // Busca todas as praias no banco de dados
-function buscarPraias() {
-    global $conn;
-    $sql = "SELECT * FROM praias";
-    $resultado = $conn->query($sql);
-
-    if (!$resultado) {
-        echo "Erro ao buscar praias: " . $conn->error;
+function buscarPraias(): array {
+    global $pdo;
+    $sql = "SELECT * FROM praias ORDER BY id";
+    try {
+        $stmt = $pdo->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        echo "Erro ao buscar praias: " . $e->getMessage();
         return [];
     }
-
-    $praias = [];
-    while ($linha = $resultado->fetch_assoc()) {
-        $praias[] = $linha;
-    }
-    return $praias;
 }
 
 // Exibe as informações de uma praia
-function exibirInfoPraia($praia) {
-    echo "<div>";
-    echo "<h2>" . htmlspecialchars($praia['nome']) . "</h2>";
-    echo "<p>Turbidez: " . htmlspecialchars($praia['taxa_turbidez']) . "</p>";
-    echo "<p>Descrição: " . htmlspecialchars($praia['descricao']) . "</p>";
-    echo "</div>";
+function exibirInfoPraia(array $praia): void {
+    $nome = htmlspecialchars($praia['nome'], ENT_QUOTES, 'UTF-8');
+    $descricao = htmlspecialchars($praia['descricao'], ENT_QUOTES, 'UTF-8');
+    $turbidez = htmlspecialchars($praia['taxa_turbidez'], ENT_QUOTES, 'UTF-8');
+    $foto = htmlspecialchars($praia['foto'], ENT_QUOTES, 'UTF-8');
+
+    echo <<<HTML
+<div style="border:1px solid #ccc; padding:10px; margin:10px; border-radius:8px;">
+    <h2>{$nome}</h2>
+    <img src="{$foto}" alt="{$nome}" style="max-width:300px; display:block; margin-bottom:10px;">
+    <p><strong>Turbidez:</strong> {$turbidez}</p>
+    <p><strong>Descrição:</strong> {$descricao}</p>
+</div>
+HTML;
 }
 
-// Chama a função principal
+// Executa a função principal
 exibirPraias();
