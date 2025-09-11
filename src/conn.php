@@ -1,12 +1,12 @@
 <?php
-// Configuração do banco de dados
-define('DB_HOST', 'mysql://root:aUHjWxtaJwslkOVdYPVrqrgnXFCNHsQF@crossover.proxy.rlwy.net:32319/railway');
-define('DB_USER', 'root');
-define('DB_PASS', 'aUHjWxtaJwslkOVdYPVrqrgnXFCNHsQF');
-define('DB_NAME', 'railway');
+$host = getenv("DB_HOST") ?: "db";
+$user = getenv("DB_USER") ?: "root";
+$pass = getenv("DB_PASSWORD") ?: "root";
+$db   = getenv("DB_NAME") ?: "minha_base";
 
-$conexao = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+$conn = new mysqli($host, $user, $pass, $db);
 
-if ($conexao->connect_error) {
-    die('Erro na conexão com o banco de dados: ' . $conexao->connect_error);
+if ($conn->connect_error) {
+    die("Erro na conexão: " . $conn->connect_error);
 }
+echo "Conexão OK!";

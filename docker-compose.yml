@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   app:
     build: .
@@ -6,3 +8,27 @@ services:
       - "8080:80"
     volumes:
       - ./src:/var/www/html
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: minha_base
+
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: minha_base
+    ports:
+      - "3306:3306"
+    # ⚠️ Render não mantém volumes persistentes
+    # então, em produção, isso aqui vai perder os dados quando reiniciar
+    # volumes:
+    #   - db_data:/var/lib/mysql
+
+# volumes:
+#   db_data:
