@@ -11,7 +11,7 @@ try {
     $pdo = new PDO($dsn, $user, $pass, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
     ]);
-    echo "Conexão PostgreSQL bem-sucedida!";
 } catch (PDOException $e) {
-    echo "Erro na conexão: " . $e->getMessage();
+    echo "Erro na conexão com o banco de dados: " . $e->getMessage();
+    $pdo = null;
 }
