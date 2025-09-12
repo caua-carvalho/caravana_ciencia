@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
   searchInput.addEventListener("input", (e) => {
     const termo = e.target.value.toLowerCase();
     const filtradas = praias.filter(p =>
-      p.nome.toLowerCase().includes(termo)
+      p.nome.toLowerCase().includes(termo)1 
     );
     renderPraias(filtradas);
   });
@@ -39,15 +39,20 @@ document.addEventListener("DOMContentLoaded", () => {
       col.className = "col-md-4";
 
       col.innerHTML = `
-        <div class="card h-100 shadow-sm">
-          <img src="${praia.foto || 'https://source.unsplash.com/400x250/?beach'}" class="card-img-top" alt="${praia.nome}">
-          <div class="card-body">
-            <h5 class="card-title">${praia.nome}</h5>
-            <p class="card-text">${praia.descricao || "Sem descrição."}</p>
-          </div>
-          <div class="card-footer text-center">
-            <span class="badge bg-primary">Turbidez: ${praia.taxa_turbidez ?? "N/A"}</span>
-          </div>
+        <div id="praiasContainer" class="row g-4">
+            <!-- Card -->
+            <div class="col-md-4">
+                <div class="card praia-card shadow-sm">
+                    <div class="card-background"
+                        style="background-image: url('https://imgmd.net/images/v1/guia/1611884/praia-vermelha-do-sul.jpg');">
+                        <div class="card-overlay">
+                            <h5 class="card-title">${praia.nome}</h5>
+                            <p class="card-text"${praia.descricao || "Sem descrição."}</p>
+                            <span class="badge bg-primary">Turbidez: ${praia.taxa_turbidez ?? "N/A"}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
       `;
       container.appendChild(col);
