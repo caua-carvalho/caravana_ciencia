@@ -1,4 +1,4 @@
-const API_URL = "https://caravana-ciencia.onrender.com/api/praias.php"; // ajuste p/ seu endpoint
+const API_URL = "https://caravana-ciencia.onrender.com/api/praias.php";
 
 document.addEventListener("DOMContentLoaded", () => {
   const container = document.getElementById("praiasContainer");
