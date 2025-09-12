@@ -26,14 +26,57 @@
             <input type="text" id="searchPraia" class="form-control" placeholder="Pesquisar praia pelo nome...">
         </div>
 
-        <!-- Listagem das Praias -->
-        <div id="praiasContainer" class="row g-4">
-            <!-- Cards são injetados via JS -->
-        </div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/praias.js"></script>
 </body>
+<style>
+    .praia-card {
+        border: none;
+        border-radius: 1rem;
+        overflow: hidden;
+        height: 250px;
+        position: relative;
+        transition: all ease-in-out 0.2s;
+    }
+
+    .praia-card:hover {
+        scale: 1.01;
+    }
+
+    .card-background {
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+    }
+
+    .card-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        padding: 1rem;
+        width: 100%;
+        background: linear-gradient(0deg, rgb(0 0 0 / 52%) 0%, rgba(0, 0, 0, 0) 100%);
+        /* leve transparência */
+        color: #fff;
+    }
+
+    .card-overlay h5 {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .card-overlay p {
+        font-size: 0.9rem;
+        margin: 0.25rem 0 0.5rem;
+    }
+
+    .card-overlay .badge {
+        font-size: 0.8rem;
+        padding: 0.4em 0.6em;
+    }
+</style>
 
 </html>
