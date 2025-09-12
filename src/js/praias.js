@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       col.innerHTML = `
         <!-- Card -->
-        <div class="col-md-4">
+        <div class="col-md-4 w-100">
             <div class="card praia-card shadow-sm">
                 <div class="card-background"
                     style="background-image: url('https://imgmd.net/images/v1/guia/1611884/praia-vermelha-do-sul.jpg');">
