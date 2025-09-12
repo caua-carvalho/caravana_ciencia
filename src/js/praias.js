@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
   searchInput.addEventListener("input", (e) => {
     const termo = e.target.value.toLowerCase();
     const filtradas = praias.filter(p =>
-      p.nome.toLowerCase().includes(termo)1 
+      p.nome.toLowerCase().includes(termo)
     );
     renderPraias(filtradas);
   });
