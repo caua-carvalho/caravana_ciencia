@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     style="background-image: url('https://imgmd.net/images/v1/guia/1611884/praia-vermelha-do-sul.jpg');">
                     <div class="card-overlay">
                         <h5 class="card-title">${praia.nome}</h5>
-                        <p class="card-text"${praia.descricao || "Sem descrição."}</p>
+                        <p class="card-text">${praia.descricao || "Sem descrição."}</p>
                         <span class="badge bg-primary">Turbidez: ${praia.taxa_turbidez ?? "N/A"}</span>
                     </div>
                 </div>
