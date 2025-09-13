@@ -1,85 +1,129 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Praias Monitoradas</title>
+    <title>Praias Monitoradas | Caravana Ciência</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Layout para garantir footer no fundo */
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        main {
+            flex: 1 0 auto;
+        }
+        footer {
+            flex-shrink: 0;
+        }
+
+        /* Padronização dos cards de praia */
+        .praia-card {
+            border: none;
+            border-radius: 1rem;
+            overflow: hidden;
+            height: 220px;
+            position: relative;
+            transition: all ease-in-out 0.2s;
+            background: #fff;
+        }
+        .praia-card:hover {
+            scale: 1.01;
+            box-shadow: 0 0 16px #0001;
+        }
+        .card-background {
+            height: 100%;
+            width: 100%;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        .card-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            padding: 1rem;
+            width: 100%;
+            background: linear-gradient(0deg, rgb(0 0 0 / 52%) 0%, rgba(0, 0, 0, 0) 100%);
+            color: #fff;
+        }
+        .card-overlay h5 {
+            margin: 0;
+            font-weight: 600;
+        }
+        .card-overlay p {
+            font-size: 0.9rem;
+            margin: 0.25rem 0 0.5rem;
+        }
+        .card-overlay .badge {
+            font-size: 0.8rem;
+            padding: 0.4em 0.6em;
+        }
+        @media (max-width: 768px) {
+            .praia-card {
+                height: 180px;
+            }
+            .container {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+        }
+    </style>
 </head>
-
 <body class="bg-light">
-
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="index.html">🌊 Caravana Ciência</a>
+            <a class="navbar-brand fw-bold" href="index.html">🌊 Aquasiz</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Início</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="praias.html">Praias</a></li>
+                </ul>
+            </div>
         </div>
     </nav>
-
-    <main class="container py-5">
+    <!-- Conteúdo principal -->
+    <main class="container py-4">
         <h2 class="text-center fw-bold mb-4">Praias Monitoradas</h2>
-
         <!-- Barra de Pesquisa -->
         <div class="input-group mb-4 shadow-sm">
             <span class="input-group-text">🔎</span>
             <input type="text" id="searchPraia" class="form-control" placeholder="Pesquisar praia pelo nome...">
         </div>
-
+        <!-- Grid de praias -->
         <div id="praiasContainer" class="row g-4">
-            
+            <!-- Cards gerados pelo JS -->
         </div>
     </main>
-
+    <!-- Footer -->
+    <footer class="bg-primary text-white text-center py-3 mt-5">
+        <small>© 2025 Caravana Ciência. Todos os direitos reservados.</small>
+    </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/praias.js"></script>
+    <script>
+        // Fecha o menu mobile após clicar em um item
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+            const menuToggle = document.getElementById('navbarNav');
+            const bsCollapse = new bootstrap.Collapse(menuToggle, {toggle: false});
+            
+            navLinks.forEach((link) => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth < 992) { // 992px é o breakpoint do navbar-expand-lg
+                        bsCollapse.hide();
+                    }
+                });
+            });
+        });
+    </script>
 </body>
-<style>
-    .praia-card {
-        border: none;
-        border-radius: 1rem;
-        overflow: hidden;
-        height: 250px;
-        position: relative;
-        transition: all ease-in-out 0.2s;
-    }
-
-    .praia-card:hover {
-        scale: 1.01;
-    }
-
-    .card-background {
-        height: 100%;
-        background-size: cover;
-        background-position: center;
-        position: relative;
-    }
-
-    .card-overlay {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        padding: 1rem;
-        width: 100%;
-        background: linear-gradient(0deg, rgb(0 0 0 / 52%) 0%, rgba(0, 0, 0, 0) 100%);
-        /* leve transparência */
-        color: #fff;
-    }
-
-    .card-overlay h5 {
-        margin: 0;
-        font-weight: 600;
-    }
-
-    .card-overlay p {
-        font-size: 0.9rem;
-        margin: 0.25rem 0 0.5rem;
-    }
-
-    .card-overlay .badge {
-        font-size: 0.8rem;
-        padding: 0.4em 0.6em;
-    }
-</style>
-
 </html>

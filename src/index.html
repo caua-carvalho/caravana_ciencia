@@ -193,8 +193,6 @@
               <ul class="list-unstyled">
                 <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i>Informações em tempo real</li>
                 <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i>Alertas de condições ruins</li>
-                <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i>Recomendações de praias</li>
-                <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i>Histórico de qualidade</li>
               </ul>
             </div>
           </div>
@@ -206,8 +204,6 @@
               <ul class="list-unstyled">
                 <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i>Dashboard analítico</li>
                 <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i>Relatórios detalhados</li>
-                <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i>Sistema de alertas</li>
-                <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i>Gestão de recursos</li>
               </ul>
             </div>
           </div>
@@ -219,8 +215,6 @@
               <ul class="list-unstyled">
                 <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i>Monitoramento contínuo</li>
                 <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i>Preservação marinha</li>
-                <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i>Dados para pesquisa</li>
-                <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i>Consciência ambiental</li>
               </ul>
             </div>
           </div>
@@ -273,5 +267,21 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Fecha o menu mobile após clicar em um item
+    document.addEventListener('DOMContentLoaded', () => {
+      const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+      const menuToggle = document.getElementById('navbarNav');
+      const bsCollapse = new bootstrap.Collapse(menuToggle, {toggle: false});
+      
+      navLinks.forEach((link) => {
+        link.addEventListener('click', () => {
+          if (window.innerWidth < 992) { // 992px é o breakpoint do navbar-expand-lg
+            bsCollapse.hide();
+          }
+        });
+      });
+    });
+  </script>
 </body>
 </html>

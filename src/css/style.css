@@ -56,7 +56,8 @@ section {
   justify-content: flex-end;
   gap: 30px;
   padding-bottom: 60px;
-  padding-left: 60px;
+  padding-left: 30px;
+  padding-right: 30px;
   width: 100%;
 }
 
@@ -84,4 +85,8 @@ section {
 .animate-card.show {
   transform: translateY(0);
   opacity: 1;
+}
+
+.contato {
+  border-radius: 30px 0 0 30px;
 }

@@ -1,59 +1,66 @@
+// Gerado pelo Copilot
+// Script para página de praias monitoradas
+
 const API_URL = "https://caravana-ciencia.onrender.com/api/praias.php";
 
 document.addEventListener("DOMContentLoaded", () => {
   const container = document.getElementById("praiasContainer");
   const searchInput = document.getElementById("searchPraia");
-
   let praias = [];
 
-  // Buscar praias do backend
-  fetch(API_URL)
-    .then(res => res.json())
-    .then(data => {
-      praias = data;
-      renderPraias(praias);
-    })
-    .catch(err => {
-      container.innerHTML = `<div class="alert alert-danger">Erro ao carregar praias: ${err}</div>`;
-    });
+  buscarPraias();
+  searchInput.addEventListener("input", filtrarPraias);
 
-  // Filtrar ao digitar
-  searchInput.addEventListener("input", (e) => {
+  // Busca as praias do backend
+  function buscarPraias() {
+    fetch(API_URL)
+      .then(res => res.json())
+      .then(data => {
+        praias = data;
+        renderizarPraias(praias);
+      })
+      .catch(err => {
+        mostrarErro("Erro ao carregar praias: " + err);
+      });
+  }
+
+  // Filtra as praias pelo termo digitado
+  function filtrarPraias(e) {
     const termo = e.target.value.toLowerCase();
-    const filtradas = praias.filter(p =>
-      p.nome.toLowerCase().includes(termo)
-    );
-    renderPraias(filtradas);
-  });
+    const filtradas = praias.filter(praia => praia.nome.toLowerCase().includes(termo));
+    renderizarPraias(filtradas);
+  }
 
-  // Renderizar cards
-  function renderPraias(lista) {
+  // Renderiza os cards das praias
+  function renderizarPraias(lista) {
     container.innerHTML = "";
     if (lista.length === 0) {
       container.innerHTML = `<p class="text-center text-muted">Nenhuma praia encontrada 😕</p>`;
       return;
     }
+    lista.forEach(praia => container.appendChild(criarCardPraia(praia)));
+  }
 
-    lista.forEach(praia => {
-      const col = document.createElement("div");
-      col.className = "col-md-4";
-
-      col.innerHTML = `
-        <!-- Card -->
-        <div class="col-md-4 w-100">
-            <div class="card praia-card shadow-sm">
-                <div class="card-background"
-                    style="background-image: url('https://imgmd.net/images/v1/guia/1611884/praia-vermelha-do-sul.jpg');">
-                    <div class="card-overlay">
-                        <h5 class="card-title">${praia.nome}</h5>
-                        <p class="card-text">${praia.descricao || "Sem descrição."}</p>
-                        <span class="badge bg-primary">Turbidez: ${praia.taxa_turbidez ?? "N/A"}</span>
-                    </div>
-                </div>
-            </div>
+  // Cria o card de uma praia
+  function criarCardPraia(praia) {
+    const col = document.createElement("div");
+    col.className = "col-12 col-md-4";
+    col.innerHTML = `
+      <div class="card praia-card shadow-sm">
+        <div class="card-background" style="background-image: url('${praia.imagem || 'https://imgmd.net/images/v1/guia/1611884/praia-vermelha-do-sul.jpg'}');">
+          <div class="card-overlay">
+            <h5 class="card-title">${praia.nome}</h5>
+            <p class="card-text">${praia.descricao || "Sem descrição."}</p>
+            <span class="badge bg-primary">Turbidez: ${praia.taxa_turbidez ?? "N/A"}</span>
+          </div>
         </div>
-      `;
-      container.appendChild(col);
-    });
+      </div>
+    `;
+    return col;
+  }
+
+  // Exibe mensagem de erro
+  function mostrarErro(msg) {
+    container.innerHTML = `<div class="alert alert-danger text-center">${msg}</div>`;
   }
 });
