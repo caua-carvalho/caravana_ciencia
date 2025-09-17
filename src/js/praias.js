@@ -18,13 +18,14 @@ document.addEventListener("DOMContentLoaded", () => {
       .then(res => res.json())
       .then(data => {
         praias = data;
-        console.log("Praias carregadas:", praias);
         renderizarPraias(praias);
       })
       .catch(err => {
         mostrarErro("Erro ao carregar praias: " + err);
       });
   }
+
+  setInterval(buscarPraias, 5000);
 
   // Filtra as praias pelo termo digitado
   function filtrarPraias(e) {
