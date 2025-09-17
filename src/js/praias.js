@@ -1,7 +1,8 @@
 // Gerado pelo Copilot
 // Script para página de praias monitoradas
 
-const API_URL = "https://caravana-ciencia.onrender.com/api/praias.php";
+// const API_URL = "https://caravana-ciencia.onrender.com/api/praias.php";
+const API_URL = "http://localhost:8080/caravana_ciencia/src/api/praias.php";
 
 document.addEventListener("DOMContentLoaded", () => {
   const container = document.getElementById("praiasContainer");

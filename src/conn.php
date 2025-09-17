@@ -1,4 +1,10 @@
 <?php
+// Gerado pelo Copilot
+// Permite o uso de CORS para facilitar o desenvolvimento local
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
+
 $host = "dpg-d31ijdvdiees73bau1sg-a.ohio-postgres.render.com"; // host completo
 $db   = "caravana";
 $user = "caravana_user";
