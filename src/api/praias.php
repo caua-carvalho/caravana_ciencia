@@ -14,7 +14,17 @@ function processarRequisicaoPraias(): void {
 // Função que busca as praias no banco de dados
 function buscarPraiasNoBanco(): array {
     global $pdo;
-    $sql = "SELECT * FROM praias ORDER BY id";
+
+    $sql = "
+        SELECT 
+            praias.*, 
+            turbidez.valor AS turbidez_valor, 
+            turbidez.data_medicao AS turbidez_data
+        FROM praias
+        LEFT JOIN turbidez ON turbidez.praia_id = praias.id
+        ORDER BY praias.id
+    ";
+    
     try {
         $stmt = $pdo->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

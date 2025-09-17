@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .then(res => res.json())
       .then(data => {
         praias = data;
+        console.log("Praias carregadas:", praias);
         renderizarPraias(praias);
       })
       .catch(err => {
@@ -52,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="card-overlay">
             <h5 class="card-title">${praia.nome}</h5>
             <p class="card-text">${praia.descricao || "Sem descrição."}</p>
-            <span class="badge bg-primary">Turbidez: ${praia.taxa_turbidez ?? "N/A"}</span>
+            <span class="badge bg-primary">Turbidez: ${praia.turbidez_valor ?? "N/A"}</span>
           </div>
         </div>
       </div>
