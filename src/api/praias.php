@@ -1,10 +1,9 @@
 <?php
-require '../conn.php'; // Conexão PDO com PostgreSQL
+require '../conn.php';
 
 // Constante para o header de JSON
 const HEADER_JSON = 'Content-Type: application/json';
 
-// Função de alto nível que processa a requisição da API
 // Retorna as praias em formato JSON
 function processarRequisicaoPraias(): void {
     $praias = buscarPraiasNoBanco();
