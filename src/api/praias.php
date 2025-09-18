@@ -1,29 +1,44 @@
 <?php
 require '../conn.php';
 
-// Constante para o header de JSON
+// Gerado pelo Copilot
+
 const HEADER_JSON = 'Content-Type: application/json';
 
-// Retorna as praias em formato JSON
+/**
+ * Controla o fluxo principal da API de praias.
+ */
 function processarRequisicaoPraias(): void {
     $praias = buscarPraiasNoBanco();
     enviarRespostaJson($praias);
 }
 
-// Função que busca as praias no banco de dados
+/**
+ * Busca as praias no banco de dados, trazendo apenas a turbidez mais recente de cada praia.
+ */
 function buscarPraiasNoBanco(): array {
     global $pdo;
 
     $sql = "
         SELECT 
-            praias.*, 
-            turbidez.valor AS turbidez_valor, 
-            turbidez.data_medicao AS turbidez_data
-        FROM praias
-        LEFT JOIN turbidez ON turbidez.praia_id = praias.id
-        ORDER BY praias.id
+            p.*, 
+            t.valor AS turbidez_valor, 
+            t.data_medicao AS turbidez_data
+        FROM praias p
+        LEFT JOIN (
+            SELECT 
+                turbidez.*
+            FROM turbidez
+            INNER JOIN (
+                SELECT praia_id, MAX(data_medicao) AS max_data
+                FROM turbidez
+                GROUP BY praia_id
+            ) ultimas
+            ON turbidez.praia_id = ultimas.praia_id AND turbidez.data_medicao = ultimas.max_data
+        ) t ON t.praia_id = p.id
+        ORDER BY p.id
     ";
-    
+
     try {
         $stmt = $pdo->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -33,17 +48,20 @@ function buscarPraiasNoBanco(): array {
     }
 }
 
-// Função que envia o JSON como resposta
+/**
+ * Envia os dados como resposta JSON.
+ */
 function enviarRespostaJson(array $dados): void {
     header(HEADER_JSON);
     echo json_encode($dados);
     exit;
 }
 
-// Função para registrar erros (poderia salvar em log, por exemplo)
+/**
+ * Registra erros no log.
+ */
 function registrarErro(string $mensagem): void {
     error_log("Erro ao buscar praias: " . $mensagem);
 }
 
-// Executa a API quando o arquivo é chamado diretamente
 processarRequisicaoPraias();

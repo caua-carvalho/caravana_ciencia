@@ -6,9 +6,10 @@ const HEADER_JSON = 'Content-Type: application/json';
 // Define o cabeçalho como JSON
 header(HEADER_JSON);
 
-// Verifica se o ID da praia foi enviado via POST
-if (isset($_POST['id_praia'])) {
-    $id_praia = $_POST['id_praia'];
+$input = json_decode(file_get_contents("php://input"), true);
+
+if (isset($input['id_praia'])) {
+    $id_praia = $input['id_praia'];
 } else {
     echo json_encode([
         'status' => 'erro',
@@ -20,7 +21,7 @@ if (isset($_POST['id_praia'])) {
 function buscarTurbidez($id_praia): array {
     global $pdo;
 
-    $sql = "SELECT * FROM turbidez WHERE id_praia = ?";
+    $sql = "SELECT * FROM turbidez WHERE praia_id = ?";
 
     try {
         $stmt = $pdo->prepare($sql);
