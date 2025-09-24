@@ -1,9 +1,9 @@
-// Gerado pelo Copilot
 // Script para página de praias monitoradas
 
+const API_BASE      = "https://caravana-ciencia.onrender.com/";
 
-const API_PRAIAS = "api/praias.php";
-const API_HISTORICO = "api/historico_turbidez.php";
+const API_PRAIAS    = API_BASE + "api/praias.php";
+const API_HISTORICO = API_BASE + "api/historico_turbidez.php";
 
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
     col.className = "col-12 col-md-4";
     col.innerHTML = `
       <div class="card praia-card shadow-sm" style="cursor:pointer">
-        <div class="card-background" style="background-image: url('${praia.foto || 'https://imgmd.net/images/v1/guia/1611884/praia-vermelha-do-sul.jpg'}');">
+        <div class="card-background" style="background-image: url('${null || 'https://imgmd.net/images/v1/guia/1611884/praia-vermelha-do-sul.jpg'}');">
           <div class="card-overlay">
             <h5 class="card-title">${praia.nome}</h5>
             <p class="card-text">${praia.descricao || "Sem descrição."}</p>
