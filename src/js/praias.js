@@ -1,20 +1,24 @@
 // Gerado pelo Copilot
 // Script para página de praias monitoradas
 
-const API_URL = "https://caravana-ciencia.onrender.com/api/praias.php";
-//const API_URL = "http://localhost:8080/caravana_ciencia/src/api/historico_turbidez.php";
+
+const API_PRAIAS = "api/praias.php";
+const API_HISTORICO = "api/historico_turbidez.php";
+
 
 document.addEventListener("DOMContentLoaded", () => {
   const container = document.getElementById("praiasContainer");
-  const searchInput = document.getElementById("searchPraia");
+  const graficoTitulo = document.getElementById("graficoTitulo");
+  const graficoCanvas = document.getElementById("graficoTurbidez");
+  let chartInstance = null;
   let praias = [];
 
   buscarPraias();
-  searchInput.addEventListener("input", filtrarPraias);
+  setInterval(buscarPraias, 10000);
 
   // Busca as praias do backend
   function buscarPraias() {
-    fetch(API_URL)
+    fetch(API_PRAIAS)
       .then(res => res.json())
       .then(data => {
         praias = data;
@@ -23,15 +27,6 @@ document.addEventListener("DOMContentLoaded", () => {
       .catch(err => {
         mostrarErro("Erro ao carregar praias: " + err);
       });
-  }
-
-  setInterval(buscarPraias, 5000);
-
-  // Filtra as praias pelo termo digitado
-  function filtrarPraias(e) {
-    const termo = e.target.value.toLowerCase();
-    const filtradas = praias.filter(praia => praia.nome.toLowerCase().includes(termo));
-    renderizarPraias(filtradas);
   }
 
   // Renderiza os cards das praias
@@ -49,8 +44,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const col = document.createElement("div");
     col.className = "col-12 col-md-4";
     col.innerHTML = `
-      <div class="card praia-card shadow-sm">
-        <div class="card-background" style="background-image: url('${praia.imagem || 'https://imgmd.net/images/v1/guia/1611884/praia-vermelha-do-sul.jpg'}');">
+      <div class="card praia-card shadow-sm" style="cursor:pointer">
+        <div class="card-background" style="background-image: url('${praia.foto || 'https://imgmd.net/images/v1/guia/1611884/praia-vermelha-do-sul.jpg'}');">
           <div class="card-overlay">
             <h5 class="card-title">${praia.nome}</h5>
             <p class="card-text">${praia.descricao || "Sem descrição."}</p>
@@ -59,7 +54,75 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       </div>
     `;
+    // Ao clicar, mostra o gráfico
+    col.querySelector('.praia-card').addEventListener('click', () => mostrarGraficoPraia(praia));
     return col;
+  }
+
+  // Mostra o gráfico de turbidez da última semana para a praia
+  function mostrarGraficoPraia(praia) {
+    graficoTitulo.textContent = `Histórico de Turbidez - ${praia.nome}`;
+    graficoTitulo.style.display = '';
+    graficoCanvas.style.display = '';
+
+    // Data inicial: 7 dias atrás
+    const dataInicial = new Date();
+    dataInicial.setDate(dataInicial.getDate() - 7);
+    const dataInicialStr = dataInicial.toISOString().slice(0, 19).replace('T', ' ');
+
+    fetch(API_HISTORICO, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id_praia: praia.id, data_inicial: dataInicialStr })
+    })
+      .then(res => res.json())
+      .then(json => {
+        if (json.status !== 'sucesso') throw new Error('Erro na API');
+        const dados = json.dados.reverse(); // ordem cronológica
+        const labels = dados.map(d => new Date(d.data_medicao).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }));
+        const valores = dados.map(d => Number(d.valor));
+        atualizarGrafico(labels, valores);
+      })
+      .catch(() => {
+        atualizarGrafico([], []);
+      });
+  }
+
+  // Atualiza ou cria o gráfico Chart.js
+  function atualizarGrafico(labels, valores) {
+    if (chartInstance) chartInstance.destroy();
+    chartInstance = new Chart(graficoCanvas, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Turbidez (NTU)',
+          data: valores,
+          borderColor: '#007bff',
+          backgroundColor: 'rgba(0,123,255,0.1)',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 4,
+          pointBackgroundColor: '#007bff',
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: true },
+          tooltip: { enabled: true }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: { display: true, text: 'NTU' }
+          },
+          x: {
+            title: { display: true, text: 'Data/Hora' }
+          }
+        }
+      }
+    });
   }
 
   // Exibe mensagem de erro
