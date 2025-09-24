@@ -120,14 +120,41 @@
     </nav>
 
 
-    <main class="container py-4">
-        <h2 class="text-center fw-bold mb-4">Praias Monitoradas</h2>
-        <div id="praiasContainer" class="row g-4"></div>
-        <div class="mt-5">
-            <h4 id="graficoTitulo" class="text-center mb-3" style="display:none"></h4>
-            <canvas id="graficoTurbidez" height="120" style="display:none"></canvas>
+
+        <main class="container py-4">
+                <h2 class="text-center fw-bold mb-4">Praias Monitoradas</h2>
+                <div id="praiasContainer" class="row g-4"></div>
+        </main>
+
+        <!-- Modal Praia -->
+        <div class="modal fade" id="modalPraia" tabindex="-1" aria-labelledby="modalPraiaLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalPraiaLabel">Praia</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-5 mb-3 mb-md-0">
+                                <img id="modalPraiaFoto" src="" alt="Foto da praia" class="img-fluid rounded shadow-sm w-100" style="object-fit:cover;max-height:220px;">
+                                <div class="mt-3">
+                                    <span class="badge bg-primary" id="modalPraiaTurbidez">Turbidez: N/A</span>
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <h4 id="modalPraiaNome"></h4>
+                                <p id="modalPraiaDescricao"></p>
+                                <div class="mt-4">
+                                    <h6 class="mb-2">Histórico de Turbidez (7 dias)</h6>
+                                    <canvas id="graficoTurbidez" height="120"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </main>
 
     <footer class="bg-primary text-white text-center py-3 mt-5">
         <small>© 2025 Caravana Ciência. Todos os direitos reservados.</small>
