@@ -22,17 +22,16 @@
             flex-shrink: 0;
         }
 
-        /* Cards */
+        /* Cards estilo praias.html */
         .praia-card {
             position: relative;
             overflow: hidden;
             border-radius: 1rem;
             height: 220px;
             cursor: pointer;
-            transition: all 0.3s ease;
             display: flex;
+            transition: all 0.3s ease;
         }
-
         .card-background {
             width: 100%;
             height: 100%;
@@ -40,7 +39,6 @@
             background-position: center;
             transition: transform 0.5s ease;
         }
-
         .card-overlay {
             position: absolute;
             bottom: 0;
@@ -48,10 +46,9 @@
             width: 100%;
             padding: 1rem;
             color: #fff;
-            background: linear-gradient(0deg, rgba(0, 0, 0, 0.5) 0%, transparent 100%);
+            background: linear-gradient(0deg, rgba(0,0,0,0.5) 0%, transparent 100%);
             transition: opacity 0.3s ease;
         }
-
         .card-info {
             position: absolute;
             top: 0;
@@ -60,44 +57,21 @@
             width: 50%;
             background: #fff;
             color: #333;
-            padding: 1rem;
-            box-shadow: -4px 0 10px rgba(0, 0, 0, 0.1);
+            padding: 0.5rem;
+            box-shadow: -4px 0 10px rgba(0,0,0,0.1);
             transition: right 0.5s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
-
-        .praia-card:hover .card-info {
-            right: 0;
-        }
-
-        .praia-card:hover .card-background {
-            transform: scale(1.1);
-        }
-
-        .praia-card:hover .card-overlay {
-            opacity: 0;
-        }
-
-        .card-overlay h5 {
-            margin: 0;
-            font-weight: 600;
-        }
-
-        .card-overlay .badge {
-            font-size: 0.8rem;
-            padding: 0.4em 0.6em;
-        }
-
+        .praia-card:hover .card-info { right: 0; }
+        .praia-card:hover .card-background { transform: scale(1.1); }
+        .praia-card:hover .card-overlay { opacity: 0; }
+        .card-overlay h5 { margin: 0; font-weight: 600; }
+        .card-overlay .badge { font-size: 0.8rem; padding: 0.4em 0.6em; }
         @media (max-width: 768px) {
-            .praia-card {
-                height: 180px;
-                flex-direction: column;
-            }
-
-            .card-info {
-                width: 100%;
-                right: -100%;
-                box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
-            }
+            .praia-card { height: 180px; flex-direction: column; }
+            .card-info { width: 100%; right: -100%; box-shadow: 0 -4px 10px rgba(0,0,0,0.1); }
         }
     </style>
 </head>
@@ -126,16 +100,16 @@
                 <div id="praiasContainer" class="row g-4"></div>
         </main>
 
-        <!-- Modal Praia -->
+    <!-- Modal Praia -->
         <div class="modal fade" id="modalPraia" tabindex="-1" aria-labelledby="modalPraiaLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalPraiaLabel">Praia</h5>
+                <div class="modal-content" style="border-radius:1.2rem;box-shadow:0 4px 32px 0 rgba(0,0,0,0.13);">
+                    <div class="modal-header border-0 pb-0" style="background:linear-gradient(90deg,#0d6efd 60%,#fff 100%);border-radius:1.2rem 1.2rem 0 0;">
+                        <h5 class="modal-title fw-bold text-white" id="modalPraiaLabel">Praia</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                     </div>
-                    <div class="modal-body">
-                        <div class="row">
+                    <div class="modal-body pt-3 pb-4">
+                        <div class="row align-items-center">
                             <div class="col-md-5 mb-3 mb-md-0">
                                 <img id="modalPraiaFoto" src="" alt="Foto da praia" class="img-fluid rounded shadow-sm w-100" style="object-fit:cover;max-height:220px;">
                                 <div class="mt-3">
@@ -143,10 +117,10 @@
                                 </div>
                             </div>
                             <div class="col-md-7">
-                                <h4 id="modalPraiaNome"></h4>
-                                <p id="modalPraiaDescricao"></p>
+                                <h4 id="modalPraiaNome" class="fw-bold mb-2"></h4>
+                                <p id="modalPraiaDescricao" class="mb-3 text-muted"></p>
                                 <div class="mt-4">
-                                    <h6 class="mb-2">Histórico de Turbidez (7 dias)</h6>
+                                    <h6 class="mb-2 fw-semibold">Histórico de Turbidez (7 dias)</h6>
                                     <canvas id="graficoTurbidez" height="120"></canvas>
                                 </div>
                             </div>
