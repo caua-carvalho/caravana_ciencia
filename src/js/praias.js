@@ -93,9 +93,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // Busca e mostra o gráfico de turbidez da última semana para a praia
   function carregarGraficoPraia(idPraia) {
     // Data inicial: 7 dias atrás
-    const dataInicial = new Date();
-    dataInicial.setDate(dataInicial.getDate() - 7);
-    const dataInicialStr = dataInicial.toISOString().slice(0, 19).replace('T', ' ');
+  const dataInicial = new Date();
+  dataInicial.setDate(dataInicial.getDate() - 7);
+  // Garante início do dia
+  dataInicial.setHours(0, 0, 0, 0);
+  const dataInicialStr = dataInicial.toISOString().slice(0, 19).replace('T', ' ');
 
     fetch(API_HISTORICO, {
       method: 'POST',
