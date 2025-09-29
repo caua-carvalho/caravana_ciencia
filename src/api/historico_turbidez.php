@@ -18,16 +18,16 @@ function buscarTurbidez($id_praia = null, $data_inicial = null): array {
     $where = [];
     $params = [];
     if ($id_praia) {
-        $where[] = "praia_id = ?";
+        $where[] = "t.praia_id = ?";
         $params[] = $id_praia;
     }
     if ($data_inicial) {
-        $where[] = "data_medicao >= ?";
+        $where[] = "t.data_medicao >= ?";
         $params[] = $data_inicial;
     }
     $whereSql = $where ? ("WHERE " . implode(" AND ", $where)) : "";
 
-    $sql = "SELECT t.*, p.nome as praia_nome FROM turbidez t JOIN praias p ON t.praia_id = p.id $whereSql ORDER BY data_medicao DESC";
+    $sql = "SELECT DATE(t.data_medicao) as data_medicao, t.praia_id, p.nome as praia_nome, AVG(t.valor) as media_turbidez FROM turbidez t JOIN praias p ON t.praia_id = p.id $whereSql GROUP BY DATE(t.data_medicao), t.praia_id, p.nome ORDER BY data_medicao DESC";
 
     try {
         $stmt = $pdo->prepare($sql);
