@@ -15,7 +15,7 @@ function processarRequisicao(): void {
         return;
     }
 
-    $atualizacao = atualizarTurbidezPraia($dados['id_praia'], $dados['turbidez']);
+    $atualizacao = atualizarTurbidezPraia($dados['praia_id'], $dados['turbidez']);
     responderJson($atualizacao);
 }
 
@@ -26,8 +26,8 @@ function validarEntrada(string $jsonInput): array {
         return ['status' => 'erro', 'mensagem' => 'JSON inválido'];
     }
 
-    if (!isset($dados['id_praia']) || !is_int($dados['id_praia'])) {
-        return ['status' => 'erro', 'mensagem' => 'Chave "id_praia" ausente ou valor inválido'];
+    if (!isset($dados['praia_id']) || !is_int($dados['praia_id'])) {
+        return ['status' => 'erro', 'mensagem' => 'Chave "praia_id" ausente ou valor inválido'];
     }
 
     if (!isset($dados['turbidez']) || !is_int($dados['turbidez'])) {
@@ -36,7 +36,7 @@ function validarEntrada(string $jsonInput): array {
 
     return [
         'status' => 'ok',
-        'id_praia' => $dados['id_praia'],
+        'praia_id' => $dados['praia_id'],
         'turbidez' => $dados['turbidez']
     ];
 }
@@ -47,15 +47,15 @@ function atualizarTurbidezPraia(int $idPraia, int $turbidez): array {
         return ['status' => 'erro', 'mensagem' => 'Falha na conexão com o banco'];
     }
 
-    $sql = "UPDATE praias SET taxa_turbidez = :turbidez WHERE id = :id";
+    $sql = "INSERT INTO turbidez (turbidez, praia_id) VALUES (:turbidez, :praia_id);";
     $stmt = $pdo->prepare($sql);
-    $executou = $stmt->execute([':turbidez' => $turbidez, ':id' => $idPraia]);
+        $executou = $stmt->execute([':turbidez' => $turbidez, ':praia_id' => $idPraia]);
 
     if (!$executou) {
         return ['status' => 'erro', 'mensagem' => 'Falha ao atualizar turbidez'];
     }
 
-    return ['status' => 'ok', 'mensagem' => 'Turbidez atualizada com sucesso', 'id_praia' => $idPraia, 'turbidez' => $turbidez];
+    return ['status' => 'ok', 'mensagem' => 'Turbidez atualizada com sucesso', 'praia_id' => $idPraia, 'turbidez' => $turbidez];
 }
 
 function responderJson(array $dados): void {
