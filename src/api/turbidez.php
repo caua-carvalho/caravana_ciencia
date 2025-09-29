@@ -30,7 +30,7 @@ function validarEntrada(string $jsonInput): array {
         return ['status' => 'erro', 'mensagem' => 'Chave "praia_id" ausente ou valor inválido'];
     }
 
-    if (!isset($dados['turbidez']) || !is_int($dados['turbidez'])) {
+    if (!isset($dados['turbidez']) || !is_numeric($dados['turbidez'])) {
         return ['status' => 'erro', 'mensagem' => 'Chave "turbidez" ausente ou valor inválido'];
     }
 
@@ -47,7 +47,7 @@ function atualizarTurbidezPraia(int $idPraia, int $turbidez): array {
         return ['status' => 'erro', 'mensagem' => 'Falha na conexão com o banco'];
     }
 
-    $sql = "INSERT INTO turbidez (turbidez, praia_id) VALUES (:turbidez, :praia_id);";
+    $sql = "INSERT INTO turbidez (valor, praia_id) VALUES (:turbidez, :praia_id);";
     $stmt = $pdo->prepare($sql);
         $executou = $stmt->execute([':turbidez' => $turbidez, ':praia_id' => $idPraia]);
 
