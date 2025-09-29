@@ -106,8 +106,16 @@ document.addEventListener("DOMContentLoaded", () => {
       .then(json => {
         if (json.status !== 'sucesso') throw new Error('Erro na API');
         const dados = json.dados.reverse(); // ordem cronológica
-        const labels = dados.map(d => new Date(d.data_medicao).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }));
-        const valores = dados.map(d => Number(d.valor));
+        // Exibe apenas o dia (dd/mm)
+        const labels = dados.map(d => {
+          const dt = new Date(d.data_medicao);
+          return dt.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+        });
+        // Usa media_turbidez, trata nulo como zero
+        const valores = dados.map(d => {
+          const v = Number(d.media_turbidez);
+          return isNaN(v) ? 0 : v;
+        });
         atualizarGrafico(labels, valores);
       })
       .catch(() => {
@@ -145,7 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
             title: { display: true, text: 'NTU' }
           },
           x: {
-            title: { display: true, text: 'Data/Hora' }
+            title: { display: true, text: 'Data' }
           }
         }
       }
