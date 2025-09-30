@@ -22,7 +22,7 @@ function buscarTurbidez($id_praia = null, $data_inicial = null): array {
         $params[] = $id_praia;
     }
     if ($data_inicial) {
-        $where[] = "t.data_medicao >= ?";
+        $where[] = "DATE(t.data_medicao) >= ?";
         $params[] = $data_inicial;
     }
     $whereSql = $where ? ("WHERE " . implode(" AND ", $where)) : "";
