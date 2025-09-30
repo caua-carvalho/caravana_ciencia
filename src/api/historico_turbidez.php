@@ -40,8 +40,35 @@ function buscarTurbidez($id_praia = null, $data_inicial = null): array {
 }
 
 // Chamada da função e retorno dos dados
+
+// Função para buscar o último valor de turbidez do dia atual para cada praia
+function buscarTurbidezAtual($id_praia = null) {
+    global $pdo;
+    $where = [];
+    $params = [];
+    if ($id_praia) {
+        $where[] = "t.praia_id = ?";
+        $params[] = $id_praia;
+    }
+    $where[] = "DATE(t.data_medicao) = CURDATE()";
+    $whereSql = $where ? ("WHERE " . implode(" AND ", $where)) : "";
+
+    $sql = "SELECT t.praia_id, p.nome as praia_nome, t.valor as turbidez_atual, t.data_medicao FROM turbidez t JOIN praias p ON t.praia_id = p.id $whereSql AND t.data_medicao = (SELECT MAX(t2.data_medicao) FROM turbidez t2 WHERE t2.praia_id = t.praia_id AND DATE(t2.data_medicao) = CURDATE())";
+
+    try {
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        registrarErro(mensagem: $e->getMessage());
+        return [];
+    }
+}
+
 $turbidez = buscarTurbidez($id_praia, $data_inicial);
+$turbidez_atual = buscarTurbidezAtual($id_praia);
 echo json_encode([
     'status' => 'sucesso',
-    'dados' => $turbidez
+    'dados' => $turbidez,
+    'turbidez_atual' => $turbidez_atual
 ]);
