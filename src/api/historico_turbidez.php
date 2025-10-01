@@ -89,12 +89,12 @@ function buscarTurbidezAtual($id_praia = null): array {
     }
 
     // Adiciona condições diretamente ao array
-    $where[] = "DATE(t.data_medicao) = CURDATE()";
+    $where[] = "t.data_medicao::date = CURRENT_DATE";
     $where[] = "t.data_medicao = (
-        SELECT MAX(t2.data_medicao) 
-        FROM turbidez t2 
-        WHERE t2.praia_id = t.praia_id 
-        AND DATE(t2.data_medicao) = CURDATE()
+        SELECT MAX(t2.data_medicao)
+        FROM turbidez t2
+        WHERE t2.praia_id = t.praia_id
+          AND t2.data_medicao::date = CURRENT_DATE
     )";
 
     $whereSql = "WHERE " . implode(" AND ", $where);
