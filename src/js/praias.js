@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let praias = [];
 
   buscarPraias();
-  setInterval(buscarPraias, 10000);
+  setInterval(buscarPraias, 5000);
 
   // Busca as praias do backend
   function buscarPraias() {
@@ -67,13 +67,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // Abre o modal e exibe info + gráfico
+  let pollingInterval = null;
+
   function abrirModalPraia(praia) {
     modalNome.textContent = praia.nome;
     modalDescricao.textContent = praia.descricao || '';
     modalFoto.src = praia.foto || 'https://imgmd.net/images/v1/guia/1611884/praia-vermelha-do-sul.jpg';
     modalTurbidez.textContent = `Turbidez: ${praia.turbidez_valor ?? 'N/A'}`;
     modalTurbidez.className = 'badge';
-    // Cor badge
+
     const v = Number(praia.turbidez_valor);
     if (!isNaN(v)) {
       if (v <= 5) modalTurbidez.classList.add('bg-success');
@@ -86,70 +88,97 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       modalTurbidez.classList.add('bg-secondary');
     }
-    // Gráfico
-    carregarGraficoPraia(praia.id);
+
+    // Abre o modal
     modal.show();
+
+    // Atualiza gráfico imediatamente
+    carregarGraficoPraia(praia.id);
+
+    // Limpa intervalo anterior, se existir
+    if (pollingInterval) clearInterval(pollingInterval);
+
+    // Cria polling a cada 10s (ou outro valor que quiser)
+    pollingInterval = setInterval(() => {
+      carregarGraficoPraia(praia.id);
+    }, 5000);
+
+    // Quando modal fechar, limpa polling
+    document.getElementById('modalPraia').addEventListener('hidden.bs.modal', () => {
+      if (pollingInterval) clearInterval(pollingInterval);
+    }, { once: true });
   }
+
 
   // Busca e mostra o gráfico de turbidez da última semana para a praia
-  function carregarGraficoPraia(idPraia) {
-    // Data inicial: 7 dias atrás
-    const dataInicial = new Date();
-    dataInicial.setDate(dataInicial.getDate() - 6);
+function carregarGraficoPraia(idPraia) {
+  const dataInicial = new Date();
+  dataInicial.setDate(dataInicial.getDate() - 6);
 
-    // Envia apenas a data (YYYY-MM-DD)
-    const dataInicialStr = dataInicial.toISOString().slice(0, 10);
+  const dataInicialStr = `${dataInicial.getFullYear()}-${String(dataInicial.getMonth()+1).padStart(2,'0')}-${String(dataInicial.getDate()).padStart(2,'0')}`;
 
-    fetch(API_HISTORICO, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id_praia: idPraia, data_inicial: dataInicialStr })
-    })
-      .then(res => res.json())
-      .then(json => {
-        if (json.status !== 'sucesso') throw new Error('Erro na API');
-        const dados = json.dados.reverse(); // ordem cronológica
+  fetch(API_HISTORICO, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id_praia: idPraia, data_inicial: dataInicialStr })
+  })
+    .then(res => res.json())
+    .then(json => {
+      if (json.status !== 'sucesso') throw new Error('Erro na API');
+      const dados = json.dados.reverse();
 
-        // Gera lista de datas do intervalo (inclui hoje)
-        const dias = [];
-        for (let i = 0; i < 7; i++) {
-          const d = new Date(dataInicial);
-          d.setDate(dataInicial.getDate() + i);
-          dias.push(d);
-        }
+      // Atualiza badge com o último valor
+      const ultimoValor = dados.length ? Number(dados[dados.length - 1].media_turbidez) : null;
+      atualizarBadgeTurbidez(ultimoValor);
 
-        // Cria um mapa para acesso rápido, normalizando a data para YYYY-MM-DD
-        const dadosMap = {};
-        dados.forEach(d => {
-          // Garante que a chave seja sempre YYYY-MM-DD
-          const key = new Date(d.data_medicao).toISOString().slice(0, 10);
-          dadosMap[key] = d.media_turbidez;
-        });
+      // Prepara gráfico
+      const dias = [];
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(dataInicial.getTime());
+        d.setDate(d.getDate() + i);
+        const str = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        dias.push(str);
+      }
 
-        // Depuração: mostra dados recebidos e chaves do mapa
-        console.log('--- Depuração Turbidez ---');
-        console.log('Dados recebidos da API:', dados);
-        console.log('Chaves do dadosMap:', Object.keys(dadosMap));
-        console.log('Valores do dadosMap:', dadosMap);
-        console.log('Dias do gráfico:', dias.map(dt => dt.toISOString().slice(0, 10)));
-
-        // Monta labels e valores, preenchendo zeros onde não há dado
-        const labels = dias.map(dt => dt.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }));
-        const valores = dias.map(dt => {
-          const key = dt.toISOString().slice(0, 10);
-          const v = Number(dadosMap[key]);
-          // Depuração: mostra valor para cada dia
-          console.log(`Dia ${key}: valor = ${v}`);
-          return (v === undefined || isNaN(v)) ? 0 : v;
-        });
-
-        console.log("Dados do gráfico:", { labels, valores });
-        atualizarGrafico(labels, valores);
-      })
-      .catch(() => {
-        atualizarGrafico([], []);
+      const dadosMap = {};
+      dados.forEach(d => {
+        dadosMap[d.data_medicao] = Number(d.media_turbidez);
       });
+
+      const labels = dias.map(dt => {
+        const [y,m,d] = dt.split("-");
+        return `${d}/${m}`;
+      });
+      const valores = dias.map(dt => dadosMap[dt] ?? 0);
+
+      atualizarGrafico(labels, valores);
+    })
+    .catch(() => {
+      atualizarGrafico([], []);
+      atualizarBadgeTurbidez(null);
+    });
+}
+
+// Função separada pra atualizar o badge
+function atualizarBadgeTurbidez(valor) {
+  modalTurbidez.textContent = `Turbidez: ${valor ?? 'N/A'}`;
+  modalTurbidez.className = 'badge'; // reseta classes
+
+  if (valor !== null && !isNaN(valor)) {
+    if (valor <= 5) modalTurbidez.classList.add('bg-success');
+    else if (valor <= 25) modalTurbidez.classList.add('bg-success','text-dark');
+    else if (valor <= 50) modalTurbidez.classList.add('bg-warning','text-dark');
+    else if (valor <= 100) modalTurbidez.classList.add('bg-warning');
+    else if (valor <= 500) modalTurbidez.classList.add('bg-danger');
+    else if (valor <= 1000) modalTurbidez.classList.add('bg-dark');
+    else modalTurbidez.classList.add('bg-secondary');
+  } else {
+    modalTurbidez.classList.add('bg-secondary');
   }
+}
+
+
+
 
   // Atualiza ou cria o gráfico Chart.js
   function atualizarGrafico(labels, valores) {
