@@ -171,6 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       options: {
         responsive: true,
+        animation: false,
         plugins: {
           legend: { display: true },
           tooltip: { enabled: true }
