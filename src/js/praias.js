@@ -126,10 +126,11 @@ function carregarGraficoPraia(idPraia) {
     .then(json => {
       if (json.status !== 'sucesso') throw new Error('Erro na API');
       const dados = json.dados.reverse();
+      const turbidez_atual = json.turbidez_atual && json.turbidez_atual.length > 0 ? json.turbidez_atual[0].turbidez_atual : 'Sem dados atuais';
 
       // Atualiza badge com o último valor
-      const ultimoValor = dados.length ? Number(dados[dados.length - 1].media_turbidez) : null;
-      atualizarBadgeTurbidez(ultimoValor);
+      console.log("Turbidez atual:", turbidez_atual);
+      atualizarBadgeTurbidez(turbidez_atual);
 
       // Prepara gráfico
       const dias = [];
