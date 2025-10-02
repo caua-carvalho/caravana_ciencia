@@ -1,238 +1,188 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-    <meta charset="UTF-8">
-    <title>Turbidez da Água - Swipe</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: "Montserrat", sans-serif;
-            background: linear-gradient(135deg, #0c57c7, #0D6EFD);
-            color: #fff;
-            overflow: hidden;
-        }
+  <meta charset="UTF-8">
+  <title>Turbidez da Água - Swipe</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Montserrat", sans-serif;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      color: #fff;
+      overflow: hidden;
+    }
 
-        .carousel-container {
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-            position: relative;
-        }
+    .carousel-container {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
 
-        .carousel-wrapper {
-            display: flex;
-            height: 100%;
-            transition: transform 0.4s ease;
-            will-change: transform;
+    .carousel-wrapper {
+      display: flex;
+      height: 100%;
+      transition: transform 0.4s ease;
+      -webkit-transition: -webkit-transform 0.4s ease;
+      will-change: transform;
 
-            /* Safari/Webkit precisa disso */
-            -webkit-transform: translate3d(0, 0, 0);
-            transform: translate3d(0, 0, 0);
-        }
+      -webkit-transform: translate3d(0, 0, 0);
+      transform: translate3d(0, 0, 0);
+    }
 
+    .card {
+      flex: 0 0 100vw;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 2rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      margin: 0 10px;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
 
-        .card {
-            flex: 0 0 100vw;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            box-sizing: border-box;
-        }
+    .turbidez {
+      font-size: 3rem;
+      margin-top: 10px;
+      font-weight: bold;
+      padding: 15px 25px;
+      border-radius: 12px;
+    }
 
+    .safe {
+      background: #2ecc71;
+      color: #fff;
+    }
 
-        .card h2 {
-            font-size: 3rem;
-            margin-bottom: 30px;
-        }
+    .medium {
+      background: #f1c40f;
+      color: #fff;
+    }
 
-        .card .turbidez {
-            font-size: 8rem;
-            font-weight: bold;
-            padding: 40px 60px;
-            border-radius: 30px;
-            background: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
-            transition: background 0.6s, color 0.6s;
-        }
-
-        .card .safe {
-            color: #00e676;
-            background: rgba(0, 230, 118, 0.1);
-        }
-
-        .card .medium {
-            color: #ffeb3b;
-            background: rgba(255, 235, 59, 0.1);
-        }
-
-        .card .danger {
-            color: #ff5252;
-            background: rgba(255, 82, 82, 0.1);
-        }
-    </style>
+    .danger {
+      background: #e74c3c;
+      color: #fff;
+    }
+  </style>
 </head>
-
 <body>
+  <div class="carousel-container">
+    <div class="carousel-wrapper" id="carouselWrapper"></div>
+  </div>
 
-    <div class="carousel-container">
-        <div class="carousel-wrapper" id="carouselWrapper">
-            <!-- Os cards serão preenchidos dinamicamente -->
-        </div>
-    </div>
+  <script>
+    const API_TURBIDEZ = "https://caravana-ciencia.onrender.com/api/historico_turbidez.php";
 
-    <script>
-        const API_BASE = "https://caravana-ciencia.onrender.com/";
-        const API_TURBIDEZ = API_BASE + "api/historico_turbidez.php";
+    const carouselWrapper = document.getElementById("carouselWrapper");
+    const cards = [];
+    const ultimoValor = [];
 
-        const carouselWrapper = document.getElementById("carouselWrapper");
-        let cards = [];
-        let currentIndex = 0;
-        let ultimoValor = [];
-        let pollingInterval = null;
+    let currentIndex = 0;
 
-        // Cria os cards dinamicamente
-        async function inicializarCards() {
-            for (let idPraia = 1; idPraia <= 3; idPraia++) {
-                try {
-                    const resp = await fetch(API_TURBIDEZ, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ id_praia: idPraia })
-                    });
-                    const dados = await resp.json();
-                    const turbidezAtual = dados.turbidez_atual?.[0];
-                    const praiaNome = turbidezAtual?.praia_nome || `Praia ${idPraia}`;
-                    const valor = turbidezAtual?.turbidez_atual || "--";
+    // helper para aplicar transform com fallback webkit
+    function setTranslateX(index) {
+      const slideWidth = window.innerWidth; // largura real da viewport
+      const value = `translateX(-${index * slideWidth}px)`;
+      carouselWrapper.style.transform = value;
+      carouselWrapper.style.webkitTransform = value;
+    }
 
-                    const card = document.createElement("div");
-                    card.classList.add("card");
-                    card.dataset.praia = idPraia;
-                    card.innerHTML = `<h2>${praiaNome}</h2><div class="turbidez">${valor}</div>`;
-                    carouselWrapper.appendChild(card);
+    async function inicializarCards() {
+      for (let idPraia = 1; idPraia <= 3; idPraia++) {
+        try {
+          const resp = await fetch(API_TURBIDEZ, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id_praia: idPraia })
+          });
+          const dados = await resp.json();
+          const turbidezAtual = dados.turbidez_atual?.[0];
+          const praiaNome = turbidezAtual?.praia_nome || `Praia ${idPraia}`;
+          const valor = turbidezAtual?.turbidez_atual || "--";
 
-                    let classeCor = "";
-                    const numValor = parseFloat(valor.replace(",", "."));
-                    if (!isNaN(numValor)) {
-                        if (numValor < 30) classeCor = "safe";
-                        else if (numValor < 70) classeCor = "medium";
-                        else classeCor = "danger";
-                    }
+          const card = document.createElement("div");
+          card.classList.add("card");
+          card.dataset.praia = idPraia;
 
-                    card.innerHTML = `<h2>${praiaNome}</h2><div class="turbidez ${classeCor}">${valor}</div>`;
-                    carouselWrapper.appendChild(card);
+          let classeCor = "";
+          const numValor = parseFloat(valor.replace(",", "."));
+          if (!isNaN(numValor)) {
+            if (numValor < 30) classeCor = "safe";
+            else if (numValor < 70) classeCor = "medium";
+            else classeCor = "danger";
+          }
 
+          card.innerHTML = `<h2>${praiaNome}</h2><div class="turbidez ${classeCor}">${valor}</div>`;
+          carouselWrapper.appendChild(card);
 
-
-                    cards.push(card);
-                    ultimoValor.push(valor);
-
-                } catch (e) {
-                    console.error("Erro ao criar card:", e);
-                }
-            }
+          cards.push(card);
+          ultimoValor.push(valor);
+        } catch (e) {
+          console.error("Erro ao criar card:", e);
         }
+      }
+    }
 
-        // Atualiza valor com animação de troca
-        function atualizarValor(card, novoValor) {
-            if (!card) return;
-            const el = card.querySelector(".turbidez");
-            if (!el) return;
+    async function atualizarCardVisivel() {
+      const cardVisivel = cards[currentIndex];
+      if (!cardVisivel) return;
 
-            const valorAtualStr = el.textContent;
-            // Tenta transformar em número pra animar
-            let valorAtual = parseFloat(valorAtualStr.replace(",", "."));
-            let valorNovo = parseFloat(novoValor.replace(",", "."));
-
-            if (isNaN(valorAtual)) valorAtual = 0;
-            if (isNaN(valorNovo)) valorNovo = 0;
-
-            // Se forem iguais, não anima
-            if (valorAtual === valorNovo) return;
-
-            let startTime = null;
-            const duration = 500; // duração da animação em ms
-
-            function animar(timestamp) {
-                if (!startTime) startTime = timestamp;
-                const progress = Math.min((timestamp - startTime) / duration, 1);
-                const valorInterpolado = valorAtual + (valorNovo - valorAtual) * progress;
-                el.textContent = valorInterpolado.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-                if (progress < 1) {
-                    requestAnimationFrame(animar);
-                }
-            }
-
-            requestAnimationFrame(animar);
-
-            // Atualiza cor
-            el.classList.remove("safe", "medium", "danger");
-            if (valorNovo < 30) el.classList.add("safe");
-            else if (valorNovo < 70) el.classList.add("medium");
-            else el.classList.add("danger");
-        }
-
-        // Atualiza turbidez do card visível
-        async function atualizarTurbidez(index) {
-            if (!cards[index]) return;
-            const card = cards[index];
-            const idPraia = card.dataset.praia;
-            try {
-                const resp = await fetch(API_TURBIDEZ, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ id_praia: Number(idPraia) })
-                });
-                const dados = await resp.json();
-                const turbidezAtual = dados.turbidez_atual?.[0];
-                const valor = turbidezAtual?.turbidez_atual || "--";
-                const nome = turbidezAtual?.praia_nome;
-
-                if (valor !== ultimoValor[index]) {
-                    atualizarValor(card, valor);
-                    ultimoValor[index] = valor;
-                }
-                if (nome) card.querySelector("h2").textContent = nome;
-
-            } catch (e) {
-                console.error("Erro atualizar turbidez:", e);
-            }
-        }
-
-        // Polling
-        function iniciarPolling() {
-            if (pollingInterval) clearInterval(pollingInterval);
-            pollingInterval = setInterval(() => atualizarTurbidez(currentIndex), 3000);
-        }
-
-        // Swipe simples
-        let startX = 0;
-        carouselWrapper.addEventListener("touchstart", e => startX = e.touches[0].clientX);
-        carouselWrapper.addEventListener("touchend", e => {
-            const endX = e.changedTouches[0].clientX;
-            const diff = endX - startX;
-            if (Math.abs(diff) > 50) {
-                if (diff < 0 && currentIndex < cards.length - 1) currentIndex++;
-                else if (diff > 0 && currentIndex > 0) currentIndex--;
-                carouselWrapper.style.transform = `translateX(-${currentIndex * 100}vw)`;
-                carouselWrapper.style.webkitTransform = `translateX(-${currentIndex * 100}vw)`;
-                atualizarTurbidez(currentIndex);
-            }
+      const idPraia = cardVisivel.dataset.praia;
+      try {
+        const resp = await fetch(API_TURBIDEZ, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id_praia: idPraia })
         });
+        const dados = await resp.json();
+        const turbidezAtual = dados.turbidez_atual?.[0];
+        const valor = turbidezAtual?.turbidez_atual || "--";
 
-        // Inicialização
-        document.addEventListener("DOMContentLoaded", async () => {
-            await inicializarCards();
-            carouselWrapper.style.transform = `translateX(-${currentIndex * 100}vw)`;
-            carouselWrapper.style.webkitTransform = `translateX(-${currentIndex * 100}vw)`;
-            atualizarTurbidez(currentIndex);
-            iniciarPolling();
-        });
-    </script>
+        if (valor !== ultimoValor[currentIndex]) {
+          let classeCor = "";
+          const numValor = parseFloat(valor.replace(",", "."));
+          if (!isNaN(numValor)) {
+            if (numValor < 30) classeCor = "safe";
+            else if (numValor < 70) classeCor = "medium";
+            else classeCor = "danger";
+          }
+          cardVisivel.querySelector(".turbidez").className = `turbidez ${classeCor}`;
+          cardVisivel.querySelector(".turbidez").textContent = valor;
+          ultimoValor[currentIndex] = valor;
+        }
+      } catch (e) {
+        console.error("Erro ao atualizar card:", e);
+      }
+    }
 
+    // Swipe
+    let startX = 0;
+    carouselWrapper.addEventListener("touchstart", (e) => {
+      startX = e.touches[0].clientX;
+    });
+
+    carouselWrapper.addEventListener("touchend", (e) => {
+      const deltaX = e.changedTouches[0].clientX - startX;
+      const threshold = 50;
+      const maxIndex = cards.length - 1;
+
+      if (deltaX < -threshold && currentIndex < maxIndex) {
+        currentIndex++;
+      } else if (deltaX > threshold && currentIndex > 0) {
+        currentIndex--;
+      }
+
+      setTranslateX(currentIndex);
+    });
+
+    inicializarCards().then(() => {
+      setTranslateX(0);
+      setInterval(atualizarCardVisivel, 5000);
+    });
+  </script>
 </body>
-
 </html>
