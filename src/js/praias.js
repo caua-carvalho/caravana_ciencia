@@ -76,19 +76,6 @@ document.addEventListener("DOMContentLoaded", () => {
     modalTurbidez.textContent = `Turbidez: ${praia.turbidez_valor ?? 'N/A'}`;
     modalTurbidez.className = 'badge';
 
-    const v = Number(praia.turbidez_valor);
-    if (!isNaN(v)) {
-      if (v <= 5) modalTurbidez.classList.add('bg-success');
-      else if (v <= 25) modalTurbidez.classList.add('bg-success','text-dark');
-      else if (v <= 50) modalTurbidez.classList.add('bg-warning','text-dark');
-      else if (v <= 100) modalTurbidez.classList.add('bg-warning');
-      else if (v <= 500) modalTurbidez.classList.add('bg-danger');
-      else if (v <= 1000) modalTurbidez.classList.add('bg-dark');
-      else modalTurbidez.classList.add('bg-secondary');
-    } else {
-      modalTurbidez.classList.add('bg-secondary');
-    }
-
     // Abre o modal
     modal.show();
 
@@ -167,11 +154,9 @@ function atualizarBadgeTurbidez(valor) {
 
   if (valor !== null && !isNaN(valor)) {
     if (valor <= 5) modalTurbidez.classList.add('bg-success');
-    else if (valor <= 25) modalTurbidez.classList.add('bg-success','text-dark');
+    else if (valor <= 25) modalTurbidez.classList.add('bg-success','text-light');
     else if (valor <= 50) modalTurbidez.classList.add('bg-warning','text-dark');
-    else if (valor <= 100) modalTurbidez.classList.add('bg-warning');
-    else if (valor <= 500) modalTurbidez.classList.add('bg-danger');
-    else if (valor <= 1000) modalTurbidez.classList.add('bg-dark');
+    else if (valor <= 100) modalTurbidez.classList.add('bg-danger','text-light');
     else modalTurbidez.classList.add('bg-secondary');
   } else {
     modalTurbidez.classList.add('bg-secondary');
